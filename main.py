@@ -1,12 +1,13 @@
 import random
 
-
-hp = 7
+MAX_HP = 7
+hp = MAX_HP
 nimbs = 0
 room = 1
 last_event = ""
 last_action = ""
 previous_scene = None
+
 room_scenes = [
     ("A vast, gloomy hall is lined with statues of fallen angels.", 3),
     ("A long corridor splits into several shadowy branches.", 3),
@@ -31,21 +32,29 @@ room_scenes = [
     ("You enter a cold vault with four sealed doors.", 4),
     ("A crooked hallway offers two paths through the gloom.", 2),
 ]
+
 while hp > 0 and nimbs < 25:
     print("\n" + "-" * 50)
-    print(f"Room {room}")
-    print(f"Health: {hp} | Nimbs: {nimbs}")
+    
+    # Итог прошлого действия выводим ДО информации о новой комнате
     if last_event:
         print(f"\n\033[1;93m{'!' * 50}\n{last_event.upper()}\n{'!' * 50}\033[0m")
         last_event = ""
+
+    print(f"Room {room}")
+    print(f"Health: {hp} | Nimbs: {nimbs}")
+
     scene, door_count = random.choice(
         [option for option in room_scenes if option[0] != previous_scene]
     )
     previous_scene = scene
+
     if room == 1:
         print("You awaken on a cold altar in the Fallen Angels' Castle.")
         print("Collect 25 nimbs to escape this place.")
+
     print(f"\033[1m{scene}\033[0m")
+
     door_choices = [str(number) for number in range(1, door_count + 1)]
     while True:
         door = input(
@@ -59,9 +68,12 @@ while hp > 0 and nimbs < 25:
             break
 
     if door == "rest":
-        healed = min(3, 7 - hp)
-        hp += healed
-        last_event = f"You rested and recovered {healed} health. No nimbs found."
+        if hp >= MAX_HP:
+            last_event = "You are already at full health."
+        else:
+            healed = min(3, MAX_HP - hp)
+            hp += healed
+            last_event = f"You rested and recovered {healed} health. No nimbs found."
     else:
         event = random.choice(["nimbs", "thief", "heal", "damage", "nothing"])
 
@@ -70,24 +82,32 @@ while hp > 0 and nimbs < 25:
             nimbs += found
             last_event = f"Behind the door lies a chest with {found} nimbs!"
         elif event == "thief":
-            stolen = min(random.randint(1, 10), nimbs)
-            nimbs -= stolen
-            last_event = f"An elusive shadow thief steals {stolen} nimbs!"
+            if nimbs == 0:
+                last_event = "A shadow thief tries to rob you, but finds your pockets completely empty!"
+            else:
+                stolen = min(random.randint(1, 10), nimbs)
+                nimbs -= stolen
+                last_event = f"An elusive shadow thief steals {stolen} nimbs!"
         elif event == "heal":
-            healed = min(random.randint(1, 2), 7 - hp)
-            hp += healed
-            last_event = f"You recover {healed} health!"
+            if hp >= MAX_HP:
+                last_event = "You are already at full health."
+            else:
+                healed = min(random.randint(1, 2), MAX_HP - hp)
+                hp += healed
+                last_event = f"You recover {healed} health!"
         elif event == "damage":
             damage = random.randint(1, 5)
             hp -= damage
             last_event = f"A trapped glyph explodes! You take {damage} damage."
         else:
             last_event = "An empty, dusty hallway. Nothing happens here."
+
     last_action = door
     room += 1
 
 if last_event:
-    print(f"\033[1;93m{last_event.upper()}\033[0m")
+    print(f"\n\033[1;93m{'!' * 50}\n{last_event.upper()}\n{'!' * 50}\033[0m")
+
 print("\n" + "=" * 50)
 if nimbs >= 25:
     print("\033[1mWith 25 nimbs, you escape the castle!\033[0m")
