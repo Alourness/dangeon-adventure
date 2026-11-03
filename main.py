@@ -4,6 +4,7 @@ import random
 hp = 7
 nimbs = 0
 room = 1
+last_event = ""
 while hp > 0 and nimbs < 25:
     print("\n" + "-" * 50)
     print(f"Room {room}")
@@ -13,33 +14,46 @@ while hp > 0 and nimbs < 25:
         print("Collect 25 nimbs to escape this place.")
     else:
         print("You enter the next room of the castle.")
+    if last_event:
+        print(last_event)
+        last_event = ""
     print("Before you stand three heavy iron doors: 1, 2, or 3.")
-    door = input("Which door do you open? (1/2/3): ").strip()
+    door = input("Choose a door (1/2/3) or rest: ").strip().lower()
 
-    if door in ["1", "2", "3"]:
+    if door == "rest":
+        healed = min(3, 7 - hp)
+        hp += healed
+        last_event = f"You rested and recovered {healed} health. No nimbs found."
+    elif door in ["1", "2", "3"]:
         event = random.choice(["nimbs", "thief", "heal", "damage", "nothing"])
 
         if event == "nimbs":
-            found = random.randint(2, 5)
+            found = random.randint(1, 5)
             nimbs += found
-            print(f"**Behind the door lies a chest with {found} nimbs!**")
+            last_event = f"Behind the door lies a chest with {found} nimbs!"
         elif event == "thief":
             stolen = min(random.randint(1, 2), nimbs)
             nimbs -= stolen
-            print(f"**An elusive shadow thief steals {stolen} nimbs!**")
+            last_event = f"An elusive shadow thief steals {stolen} nimbs!"
         elif event == "heal":
-            healed = random.randint(1, 3)
+            healed = min(random.randint(1, 2), 7 - hp)
             hp += healed
-            print(f"**You recover {healed} health!**")
+            last_event = f"You recover {healed} health!"
         elif event == "damage":
-            damage = random.randint(2, 4)
+            damage = random.randint(1, 3)
             hp -= damage
-            print(f"**A trapped glyph explodes! You take {damage} damage.**")
+            last_event = f"A trapped glyph explodes! You take {damage} damage."
         else:
-            print("**An empty, dusty hallway. Nothing happens here.**")
+            last_event = "An empty, dusty hallway. Nothing happens here."
     else:
-        print("You hesitate and stand still, choosing no door.")
+        last_event = "You hesitate and stand still, choosing no door."
     room += 1
 
+if last_event:
+    print(last_event)
+print("\n" + "=" * 50)
 if nimbs >= 25:
-    print("With 25 nimbs, you escape the castle!")
+    print("\033[1mWith 25 nimbs, you escape the castle!\033[0m")
+else:
+    print("\033[1mYou have fallen in the castle. Game over.\033[0m")
+print("=" * 50)
