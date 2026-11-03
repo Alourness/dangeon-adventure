@@ -1,14 +1,35 @@
+import random
+
+
 hp = 7
 gold = 0
-print("You awaken on a cold altar in the Fallen Angels' Castle.")
-print("Twisted whispers echo as you see two corridors: left and right.")
-door = input("Which door? (left/right) ").lower().strip()
-if door == "left":
- print("A shadow demon strikes from the dark!")
- hp = hp - 2
-elif door == "right":
- print("You find a glowing chest filled with obsidian coins!")
- gold = gold + 3
-else:
- print("The abyssal silence freezes your blood. Nothing happens.")
-print(f"Health: {hp} | Gold: {gold}")
+while hp > 0 and gold < 10:
+    print("You awaken on a cold altar in the Fallen Angels' Castle.")
+    print("Before you stand three heavy iron doors: 1, 2, or 3.")
+    door = input("Which door do you open? (1/2/3): ").strip()
+
+    if door in ["1", "2", "3"]:
+        event = random.choice(["gold", "thief", "heal", "damage", "nothing"])
+
+        if event == "gold":
+            found = random.randint(2, 5)
+            gold += found
+            print(f"Behind the door lies a chest with {found} gold coins!")
+        elif event == "thief":
+            stolen = min(random.randint(1, 2), gold)
+            gold -= stolen
+            print(f"An elusive shadow thief steals {stolen} gold!")
+        elif event == "heal":
+            healed = random.randint(1, 3)
+            hp += healed
+            print(f"You recover {healed} health!")
+        elif event == "damage":
+            damage = random.randint(2, 4)
+            hp -= damage
+            print(f"A trapped glyph explodes! You take {damage} damage.")
+        else:
+            print("An empty, dusty hallway. Nothing happens here.")
+    else:
+        print("You hesitate and stand still, choosing no door.")
+
+    print(f"Health: {hp} | Gold: {gold}")
