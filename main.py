@@ -3,7 +3,11 @@ import random
 
 hp = 7
 gold = 0
+room = 1
 while hp > 0 and gold < 10:
+    print("\n" + "-" * 50)
+    print(f"Room {room}")
+    print(f"Health: {hp} | Gold: {gold}")
     print("You awaken on a cold altar in the Fallen Angels' Castle.")
     print("Before you stand three heavy iron doors: 1, 2, or 3.")
     door = input("Which door do you open? (1/2/3): ").strip()
@@ -31,5 +35,4 @@ while hp > 0 and gold < 10:
             print("An empty, dusty hallway. Nothing happens here.")
     else:
         print("You hesitate and stand still, choosing no door.")
-
-    print(f"Health: {hp} | Gold: {gold}")
+    room += 1
