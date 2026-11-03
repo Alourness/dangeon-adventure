@@ -6,6 +6,31 @@ nimbs = 0
 room = 1
 last_event = ""
 last_action = ""
+previous_scene = None
+room_scenes = [
+    ("A vast, gloomy hall is lined with statues of fallen angels.", 3),
+    ("A long corridor splits into several shadowy branches.", 3),
+    ("You reach a crossroads between the castle's towering halls.", 4),
+    ("A frightening chamber is crowded with old wooden doors.", 5),
+    ("Mirrors cover the walls, reflecting four mysterious doors.", 4),
+    ("A narrow stone passage ends at two iron doors.", 2),
+    ("Moonlight spills into a circular room with three exits.", 3),
+    ("Broken angel statues guard a pair of ancient doors.", 2),
+    ("A grand staircase rises between four archways.", 4),
+    ("You enter a dusty library with five hidden passages.", 5),
+    ("A flooded chamber has two dry doorways above the water.", 2),
+    ("Black candles illuminate three doors in the darkness.", 3),
+    ("A ruined ballroom opens into four silent corridors.", 4),
+    ("You find a cell block with five heavy iron gates.", 5),
+    ("A low tunnel forks toward two distant lights.", 2),
+    ("A room of cracked mirrors hides three real doors.", 3),
+    ("A narrow bridge leads to four doorways in the castle wall.", 4),
+    ("An empty chapel has two doors beneath its shattered altar.", 2),
+    ("A spiral gallery winds past five dark entrances.", 5),
+    ("A stone chamber echoes around three carved doorways.", 3),
+    ("You enter a cold vault with four sealed doors.", 4),
+    ("A crooked hallway offers two paths through the gloom.", 2),
+]
 while hp > 0 and nimbs < 25:
     print("\n" + "-" * 50)
     print(f"Room {room}")
@@ -13,16 +38,23 @@ while hp > 0 and nimbs < 25:
     if last_event:
         print(f"\n\033[1;93m{'!' * 50}\n{last_event.upper()}\n{'!' * 50}\033[0m")
         last_event = ""
+    scene, door_count = random.choice(
+        [option for option in room_scenes if option[0] != previous_scene]
+    )
+    previous_scene = scene
     if room == 1:
         print("You awaken on a cold altar in the Fallen Angels' Castle.")
         print("Collect 25 nimbs to escape this place.")
-    else:
-        print("You enter the next room of the castle.")
-    print("Before you stand three heavy iron doors: 1, 2, or 3.")
+    print(f"\033[1m{scene}\033[0m")
+    door_choices = [str(number) for number in range(1, door_count + 1)]
     while True:
-        door = input("Choose a door (1/2/3) or rest: ").strip().lower()
+        door = input(
+            f"Choose a door ({'/'.join(door_choices)}) or rest: "
+        ).strip().lower()
         if door == "rest" and last_action == "rest":
             print("You must open a door before resting again.")
+        elif door != "rest" and door not in door_choices:
+            print("That door is not available in this room.")
         else:
             break
 
@@ -30,7 +62,7 @@ while hp > 0 and nimbs < 25:
         healed = min(3, 7 - hp)
         hp += healed
         last_event = f"You rested and recovered {healed} health. No nimbs found."
-    elif door in ["1", "2", "3"]:
+    else:
         event = random.choice(["nimbs", "thief", "heal", "damage", "nothing"])
 
         if event == "nimbs":
@@ -51,8 +83,6 @@ while hp > 0 and nimbs < 25:
             last_event = f"A trapped glyph explodes! You take {damage} damage."
         else:
             last_event = "An empty, dusty hallway. Nothing happens here."
-    else:
-        last_event = "You hesitate and stand still, choosing no door."
     last_action = door
     room += 1
 
